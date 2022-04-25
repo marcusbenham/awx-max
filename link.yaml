@@ -1,0 +1,30 @@
+- name: Link Snapshot mb_ansible_demo
+  hosts: localhost
+  collections: dellemc.powermax
+  connection: local
+  gather_facts: no
+
+  vars_files:
+    - get_password.yml
+    - uni_connection_vars.yml
+
+  vars:
+
+    input: &uni_connection_vars
+      serial_no: "{{ serial_no }}"
+      password: "{{ powermax_password }}"
+      unispherehost: "{{ unispherehost }}"
+      universion: "{{ universion }}"
+      user: "{{ powermax_username }}"
+      verifycert: "{{ verifycert }}"
+
+  tasks:
+  - name: Change Snapshot Link Status to Linked
+    dellemc_powermax_snapshot:
+      <<: *uni_connection_vars
+      sg_name: "{{sg_name}}"
+      snapshot_name: "{{snap_name}}"
+      generation: 0
+      target_sg_name: "{{tgt_sg}}"
+      link_status: "linked"
+      state: "present"
