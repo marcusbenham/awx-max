@@ -5,17 +5,16 @@
   gather_facts: no
 
   vars_files:
-    - get_password.yml
     - uni_connection_vars.yml
 
   vars:
 
     input: &uni_connection_vars
       serial_no: "{{ serial_no }}"
-      password: "{{ powermax_password }}"
+      password: "{{ password }}"
       unispherehost: "{{ unispherehost }}"
       universion: "{{ universion }}"
-      user: "{{ powermax_username }}"
+      user: "{{ username }}"
       verifycert: "{{ verifycert }}"
 
   tasks:
