@@ -1,0 +1,27 @@
+- name: Establish mb_ansible_demo Replication
+  hosts: localhost
+  collections: dellemc.powermax
+  connection: local
+  gather_facts: no
+
+  vars_files:
+    - get_password.yml
+    - uni_connection_vars.yml
+
+  vars:
+
+    input: &uni_connection_vars
+      serial_no: "{{ serial_no }}"
+      password: "{{ powermax_password }}"
+      unispherehost: "{{ unispherehost }}"
+      universion: "{{ universion }}"
+      user: "{{ powermax_username }}"
+      verifycert: "{{ verifycert }}"
+
+  tasks:
+  - name: Establish Replication
+    dellemc_powermax_srdf:
+      <<: *uni_connection_vars
+      sg_name: "{{sg_name}}"
+      srdf_state: 'Establish'
+      state: 'present'
