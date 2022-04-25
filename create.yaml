@@ -1,0 +1,59 @@
+- name: Ansible Provisioning Demo for Powermax
+  hosts: localhost
+  collections: dellemc.powermax
+  connection: local
+  gather_facts: no
+
+  vars_files:
+    - get_password.yml
+    - uni_connection_vars.yml
+
+  vars:
+
+    input: &uni_connection_vars
+      serial_no: "{{ serial_no }}"
+      password: "{{ powermax_password }}"
+      unispherehost: "{{ unispherehost }}"
+      universion: "{{ universion }}"
+      user: "{{ powermax_username }}"
+      verifycert: "{{ verifycert }}"
+
+  tasks:
+  - name: Create Ansible Demo Storage Group
+    dellemc_powermax_storagegroup:
+      <<: *uni_connection_vars
+      sg_name: "{{ sg_name }}"
+      service_level: "Diamond"
+      srp: "SRP_1"
+      compression: True
+      state: 'present'
+
+  - name: Create Thin Device
+    dellemc_powermax_volume:
+      <<: *uni_connection_vars
+      sg_name: "{{ sg_name }}"
+      vol_name: "{{ vol_name }}"
+      size: "{{ size }}"
+      cap_unit: "{{ cap_unit }}"
+      state: 'present'
+
+  - name: Create Port Group "{{ portgroup_name }}"
+    dellemc_powermax_portgroup:
+      <<: *uni_connection_vars
+      portgroup_name: "{{ portgroup_name }}"
+      state: "present"
+      ports:
+      - director_id: "FA-1D"
+        port_id: "4"
+      - director_id: "FA-2D"
+        port_id: "4"
+      port_state: 'present-in-group'
+
+  - name: Create Masking View "{{ mv_name }}" with existing elements.
+    dellemc_powermax_maskingview:
+      <<: *uni_connection_vars
+      mv_name: "{{ mv_name }}"
+      portgroup_name: "{{ portgroup_name }}"
+      hostgroup_name: "{{ hostgroup_name }}"
+      sg_name: "{{ sg_name }}"
+      state: 'present'
