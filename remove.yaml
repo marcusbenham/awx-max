@@ -1,0 +1,77 @@
+- name: Remove Storage for Powermax
+  hosts: localhost
+  collections: dellemc.powermax
+  connection: local
+  gather_facts: no
+
+  vars_files:
+    - get_password.yml
+    - uni_connection_vars.yml
+
+  vars:
+    sg_name: 'mb_ansible_demo'
+    cap_unit: 'GB'
+    vol_name: 'vol_1'
+    mv_name: 'mb_ansible_demo_mv'
+    portgroup_name: 'mb_ansible_demo_pg'
+    hostgroup_name: 'ALL_ESX'
+    remote_serial_no: '000297600448'
+
+    input: &uni_connection_vars
+      serial_no: "{{ serial_no }}"
+      password: "{{ powermax_password }}"
+      unispherehost: "{{ unispherehost }}"
+      universion: "{{ universion }}"
+      user: "{{ powermax_username }}"
+      verifycert: "{{ verifycert }}"
+
+  tasks:
+  - name: Delete Snapshot for a Storage Group
+    dellemc_powermax_snapshot:
+      <<: *uni_connection_vars
+      sg_name: "mb_ansible_demo"
+      snapshot_name: "mb_ansible_demo_snap"
+      state: "absent"
+
+  tasks:
+  - name: Remove Replication
+    dellemc_powermax_srdf:
+      <<: *uni_connection_vars
+      sg_name: "{{sg_name}}"
+      remote_serial_no: "{{remote_serial_no}}"
+      state: 'absent'
+      srdf_mode: "{{srdf_mode}}"
+
+  tasks:
+  - name: Delete MV "{{mv_name}}"
+    dellemc_powermax_maskingview:
+      <<: *uni_connection_vars
+      mv_name: "{{mv_name}}"
+      state: 'absent'
+
+  - name: Get volume details
+    register: result
+    dellemc_powermax_volume:
+      <<: *uni_connection_vars
+      sg_name: "{{sg_name}}"
+      vol_name: "{{vol_name}}"
+      size: 10
+      state: 'present'
+
+  - name: Delete Storage Group "{{sg_name}}"
+    dellemc_powermax_storagegroup:
+      <<: *uni_connection_vars
+      sg_name: "{{sg_name}}"
+      state: 'absent'
+
+  - name: Delete volume "{{vol_name}}"
+    dellemc_powermax_volume:
+      <<: *uni_connection_vars
+      vol_id: "{{result.volume_details.volumeId}}"
+      state: 'absent'
+
+  - name: Delete port group "{{portgroup_name}}"
+    dellemc_powermax_portgroup:
+      <<: *uni_connection_vars
+      portgroup_name: "{{portgroup_name}}"
+      state: "absent"
