@@ -8,13 +8,6 @@
     - uni_connection_vars.yml
 
   vars:
-    sg_name: 'mb_ansible_demo'
-    cap_unit: 'GB'
-    vol_name: 'vol_1'
-    mv_name: 'mb_ansible_demo_mv'
-    portgroup_name: 'mb_ansible_demo_pg'
-    hostgroup_name: 'BETA_CLUSTER'
-    remote_serial_no: '000297600448'
 
     input: &uni_connection_vars
       serial_no: "{{ serial_no }}"
@@ -46,8 +39,8 @@
       <<: *uni_connection_vars
       sg_name: "{{sg_name}}"
       vol_name: "{{vol_name}}"
-      size: 10
-      state: 'present'
+      size: "{{size}}"
+      state: 'absent'
 
   - name: Delete Storage Group "{{sg_name}}"
     dellemc_powermax_storagegroup:
