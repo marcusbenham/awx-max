@@ -13,7 +13,7 @@
     vol_name: 'vol_1'
     mv_name: 'mb_ansible_demo_mv'
     portgroup_name: 'mb_ansible_demo_pg'
-    hostgroup_name: 'ALL_ESX'
+    hostgroup_name: 'BETA_CLUSTER'
     remote_serial_no: '000297600448'
 
     input: &uni_connection_vars
