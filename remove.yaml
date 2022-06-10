@@ -25,15 +25,6 @@
       verifycert: "{{ verifycert }}"
 
   tasks:
-  - name: Delete Snapshot for a Storage Group
-    dellemc_powermax_snapshot:
-      <<: *uni_connection_vars
-      sg_name: "{{sg_name}}"
-      snapshot_name: "{{snap_name}}"
-      snapshot_id: "{{snap_id}}"
-      state: "absent"
-
-  tasks:
   - name: Remove Replication
     dellemc_powermax_srdf:
       <<: *uni_connection_vars
